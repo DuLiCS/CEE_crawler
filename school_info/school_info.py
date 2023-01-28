@@ -13,7 +13,7 @@ class JsonAnalysis:
     def __init__(self, school_name):
         self.school_name = school_name
         id_query = DataStorage()
-        self.school_id, self.province_id = id_query.school_province_id_query(school_name)
+        self.school_id = id_query.school_province_id_query(school_name)
 
     def analysis(self, subject_name):
         subject_dic = {'province': 'provincescore', 'plan': 'specialplan', 'score': 'specialscore'}
