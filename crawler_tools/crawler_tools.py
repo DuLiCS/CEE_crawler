@@ -1,12 +1,16 @@
 """
 This file contains functions of tools using in the CEE crawler
 """
-import pymongo
-from data_storage import *
 
-MONGO_DB_NAME = 'cee_crawler'
-MONGO_CONNECTION_STRING = 'mongodb://localhost:27017'
+import base64
+import hmac
+from hashlib import sha1, md5
 
-def school_id_query(school_name):
-    db = DataStorage(MONGO_DB_NAME, MONGO_CONNECTION_STRING)
-    collection_name = 'school_info'
+
+def hash_hmac(code, key='D23ABC@#56'):
+    hmac_code = hmac.new(key.encode(), code.encode(), sha1).digest()
+    b_64_t = base64.b64encode(hmac_code).decode()
+    return md5(b_64_t.encode()).hexdigest()
+
+
+
