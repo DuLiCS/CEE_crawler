@@ -1,13 +1,16 @@
 """
 This file contains functions that initialize the CEE crawler
 """
+import random
 import requests
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s : %(message)s')
-Safari_headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) '
-                  'Version/16.1 Safari/605.1.15'}
+header_set = ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 '
+           'Safari/537.36', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)'
+                            'Version/16.1 Safari/605.1.15']
+
+Safari_headers = {'User-Agent': header_set[random.randint(0, 1)]}
 
 
 class CeeCrawler(object):
