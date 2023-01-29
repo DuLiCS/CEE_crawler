@@ -19,7 +19,7 @@ class Crawler:
         score_school_name = self.data_operator.no_scrape_name('score')
         if score_school_name is not None:
             score_scrape = DataScrape(score_school_name)
-            score_scrape.special_plan_scrape()
+            score_scrape.special_score_scrape()
             self.data_operator.flag_change('score', score_school_name)
             return True
         else:

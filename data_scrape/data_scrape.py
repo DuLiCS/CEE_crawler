@@ -72,7 +72,7 @@ class DataScrape:
                         url = no_page_url.format(batch=batch, province_id=self.province_id, subject=subject, page=page, school_id=self.school_id, year=year)
                         safe_sign = hash_hmac(url)
                         encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                        time.sleep(random.randint(20, 31))
+                        time.sleep(random.randint(20, 60))
                         plan_crawler = CeeCrawler(encrypted_url)
                         plan_data = plan_crawler.get_response()
                         self.data_storage.store(plan_data.get('data').get('item'), collection_name=default_plan_collection)
@@ -95,7 +95,7 @@ class DataScrape:
                                           school_id=self.school_id, year=year)
                     safe_sign = hash_hmac(url)
                     encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                    time.sleep(random.randint(10, 21))
+                    time.sleep(random.randint(10, 31))
                     score_crawler = CeeCrawler(encrypted_url)
                     score_data = score_crawler.get_response()
                     num_found = score_data.get('data').get('numFound')
@@ -112,7 +112,7 @@ class DataScrape:
                         url = no_page_url.format(batch=batch, province_id=self.province_id, subject=subject, page=page, school_id=self.school_id, year=year)
                         safe_sign = hash_hmac(url)
                         encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                        time.sleep(random.randint(20, 31))
+                        time.sleep(random.randint(5, 60))
                         score_crawler = CeeCrawler(encrypted_url)
                         score_data = score_crawler.get_response()
                         self.data_storage.store(score_data.get('data').get('item'), collection_name=default_score_collection)
