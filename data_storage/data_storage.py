@@ -82,11 +82,13 @@ class DataStorage:
         result = collection.find_one({(type_name + '_flag'): 0})
         return result['school_name']
 
-    def flag_change(self, type_name, school_name):
+    def flag_change(self, type_name, school_name, change_num=1):
         school_filter = {'school_name': school_name}
-        new_values = {(type_name + '_flag'): 1}
+        new_values = {(type_name + '_flag'): change_num}
         collection = self.db[default_check_db_name]
         collection.update_one(school_filter, {'$set': new_values})
+
+
 
 
 
