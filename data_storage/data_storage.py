@@ -7,7 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s : %(message)s')
 MONGO_DB_NAME = 'cee_crawler'
 MONGO_CONNECTION_STRING = 'mongodb://localhost:27017'
-default_check_db_name = 'school_info'
+default_check_db_name = 'full_school_info'
 province = {
     11: "\u5317\u4eac",
     12: "\u5929\u6d25",
@@ -71,19 +71,19 @@ class DataStorage:
             collection.insert_many(data)
             logging.info('data saving successfully')
 
-    def school_province_id_query(self, school_name, collection_name='school_info'):
+    def school_province_id_query(self, school_name, collection_name='full_school_info'):
         collection = self.db[collection_name]
-        school_query = {'school_name': school_name}
+        school_query = {'name': school_name}
         record = collection.find_one(school_query)
         return record['school_id']
 
     def no_scrape_name(self, type_name):
         collection = self.db[default_check_db_name]
         result = collection.find_one({(type_name + '_flag'): 0})
-        return result['school_name']
+        return result['name']
 
     def flag_change(self, type_name, school_name, change_num=1):
-        school_filter = {'school_name': school_name}
+        school_filter = {'name': school_name}
         new_values = {(type_name + '_flag'): change_num}
         collection = self.db[default_check_db_name]
         collection.update_one(school_filter, {'$set': new_values})

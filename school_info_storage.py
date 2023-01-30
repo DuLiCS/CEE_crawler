@@ -10,5 +10,5 @@ headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWe
 crawler_test = CeeCrawler(school_num_url, headers)
 response = crawler_test.get_response()
 school_info_db = DataStorage(MONGO_DB_NAME, MONGO_CONNECTION_STRING)
-collection_name = 'school_info'
+collection_name = 'school_info_full'
 school_info_db.store(response.get('data'), collection_name)

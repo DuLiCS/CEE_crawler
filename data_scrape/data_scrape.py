@@ -9,6 +9,8 @@ default_province_name = '陕西'
 default_province_collection = 'province_score'
 default_plan_collection = 'plan'
 default_score_collection = 'score'
+min_time = 5
+max_time = 25
 
 
 
@@ -33,7 +35,7 @@ class DataScrape:
                            'province_id}/{subjects}/1.json'
                 url = base_url.format(year=str(year), school_id=self.school_id, province_id=self.province_id,
                                       subjects=subject)
-                time.sleep(random.randint(7, 20))
+                time.sleep(random.randint(min_time, max_time))
                 province_crawler = CeeCrawler(url)
                 province_data = province_crawler.get_response()
                 self.data_storage.store(province_data.get('data').get('item'),
@@ -60,7 +62,7 @@ class DataScrape:
                                           school_id=self.school_id, year=year)
                     safe_sign = hash_hmac(url)
                     encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                    time.sleep(random.randint(10, 21))
+                    time.sleep(random.randint(min_time, max_time))
                     plan_crawler = CeeCrawler(encrypted_url)
                     plan_data = plan_crawler.get_response()
                     num_found = plan_data.get('data').get('numFound')
@@ -80,7 +82,7 @@ class DataScrape:
                         url = no_page_url.format(batch=batch, province_id=self.province_id, subject=subject, page=page, school_id=self.school_id, year=year)
                         safe_sign = hash_hmac(url)
                         encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                        time.sleep(random.randint(20, 60))
+                        time.sleep(random.randint(min_time, max_time))
                         plan_crawler = CeeCrawler(encrypted_url)
                         plan_data = plan_crawler.get_response()
                         self.data_storage.store(plan_data.get('data').get('item'), collection_name=default_plan_collection)
@@ -107,7 +109,7 @@ class DataScrape:
                                           school_id=self.school_id, year=year)
                     safe_sign = hash_hmac(url)
                     encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                    time.sleep(random.randint(10, 31))
+                    time.sleep(random.randint(min_time, max_time))
                     score_crawler = CeeCrawler(encrypted_url)
                     score_data = score_crawler.get_response()
                     num_found = score_data.get('data').get('numFound')
@@ -127,11 +129,41 @@ class DataScrape:
                         url = no_page_url.format(batch=batch, province_id=self.province_id, subject=subject, page=page, school_id=self.school_id, year=year)
                         safe_sign = hash_hmac(url)
                         encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-                        time.sleep(random.randint(5, 60))
+                        time.sleep(random.randint(min_time, max_time))
                         score_crawler = CeeCrawler(encrypted_url)
                         score_data = score_crawler.get_response()
                         self.data_storage.store(score_data.get('data').get('item'), collection_name=default_score_collection)
                         logging.info('%s %s %s %s page%s', self.school_name, year, batch, subject, page)
+
+    def full_school_name_scrape(self):
+        page_1_url = 'api.eol.cn/web/api/?admissions=&central=&department=&dual_class=&f211=&f985=&is_doublehigh' \
+                     '=&is_dual_class=&keyword=&nature=&page=1&province_id=&ranktype=&request_type=1&school_type' \
+                     '=&size=20&top_school_id=3269&type=&uri=apidata/api/gk/school/lists'
+        safe_sign = hash_hmac(page_1_url)
+        encrypted_url = 'https://' + page_1_url + '&signsafe=' + safe_sign
+        time.sleep(random.randint(min_time, max_time))
+        score_crawler = CeeCrawler(encrypted_url)
+        score_data = score_crawler.get_response()
+        num_found = score_data.get('data').get('numFound')
+
+        self.data_storage.store(score_data.get('data').get('item'), collection_name='full_school_info')
+        logging.info('school list page 1 done!')
+        pages = num_found // 10
+        for page in range(2, pages + 2):
+            if num_found % 10 == 0:
+                if page == pages + 1:
+                    continue
+            no_page_url = 'api.eol.cn/web/api/?admissions=&central=&department=&dual_class=&f211=&f985=&is_doublehigh' \
+                     f'=&is_dual_class=&keyword=&nature=&page={page}&province_id=&ranktype=&request_type=1&school_type' \
+                     '=&size=20&top_school_id=3269&type=&uri=apidata/api/gk/school/lists'
+            url = no_page_url.format(page=page)
+            safe_sign = hash_hmac(url)
+            encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
+            time.sleep(random.randint(min_time, max_time))
+            school_list_crawler = CeeCrawler(encrypted_url)
+            school_data = school_list_crawler.get_response()
+            self.data_storage.store(school_data.get('data').get('item'), collection_name='full_school_info')
+            logging.info('school list page %s done!', page)
 
 
 

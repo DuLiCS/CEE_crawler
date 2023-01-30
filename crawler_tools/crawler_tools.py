@@ -6,7 +6,7 @@ import base64
 import hmac
 from hashlib import sha1, md5
 from data_storage import *
-default_check_db_name = 'school_info'
+default_check_db_name = 'full_school_info'
 
 
 def hash_hmac(code, key='D23ABC@#56'):
@@ -15,7 +15,7 @@ def hash_hmac(code, key='D23ABC@#56'):
     return md5(b_64_t.encode()).hexdigest()
 
 def error_log(type_name, school_name, error_code):
-    school_filter = {'school_name': school_name}
+    school_filter = {'name': school_name}
     new_values = {(type_name + '_flag'): error_code}
     store = DataStorage()
     collection = store.db[default_check_db_name]

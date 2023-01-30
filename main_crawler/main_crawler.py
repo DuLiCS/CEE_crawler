@@ -24,3 +24,4 @@ class Crawler:
             return True
         else:
             return False
+
