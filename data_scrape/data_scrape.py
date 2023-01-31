@@ -11,7 +11,7 @@ default_plan_collection = 'plan'
 default_score_collection = 'score'
 min_time = 5
 max_time = 25
-
+max_waiting_time = 60
 
 
 class DataScrape:
@@ -65,6 +65,10 @@ class DataScrape:
                     time.sleep(random.randint(min_time, max_time))
                     plan_crawler = CeeCrawler(encrypted_url)
                     plan_data = plan_crawler.get_response()
+                    while score_data is None:
+                        time.sleep(max_waiting_time)
+                        logging.info('No data received !!!!! restarting')
+                        score_data = plan_crawler.get_response()
                     num_found = plan_data.get('data').get('numFound')
                     if num_found == 0:
                         break
@@ -85,6 +89,10 @@ class DataScrape:
                         time.sleep(random.randint(min_time, max_time))
                         plan_crawler = CeeCrawler(encrypted_url)
                         plan_data = plan_crawler.get_response()
+                        while score_data is None:
+                            time.sleep(max_waiting_time)
+                            logging.info('No data received !!!!! restarting')
+                            score_data = plan_crawler.get_response()
                         self.data_storage.store(plan_data.get('data').get('item'), collection_name=default_plan_collection)
                         logging.info('%s %s %s %s page%s', self.school_name, year, batch, subject, page)
 
@@ -112,6 +120,10 @@ class DataScrape:
                     time.sleep(random.randint(min_time, max_time))
                     score_crawler = CeeCrawler(encrypted_url)
                     score_data = score_crawler.get_response()
+                    while score_data is None:
+                        time.sleep(max_waiting_time)
+                        logging.info('No data received !!!!! restarting')
+                        score_data = score_crawler.get_response()
                     num_found = score_data.get('data').get('numFound')
                     if num_found == 0:
                         break
@@ -132,6 +144,10 @@ class DataScrape:
                         time.sleep(random.randint(min_time, max_time))
                         score_crawler = CeeCrawler(encrypted_url)
                         score_data = score_crawler.get_response()
+                        while score_data is None:
+                            time.sleep(max_waiting_time)
+                            logging.info('No data received !!!!! restarting')
+                            score_data = score_crawler.get_response()
                         self.data_storage.store(score_data.get('data').get('item'), collection_name=default_score_collection)
                         logging.info('%s %s %s %s page%s', self.school_name, year, batch, subject, page)
 
