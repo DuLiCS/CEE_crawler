@@ -11,7 +11,7 @@ default_plan_collection = 'plan'
 default_score_collection = 'score'
 min_time = 5
 max_time = 25
-max_waiting_time = 60
+restart_waiting_time = 60
 
 
 class DataScrape:
@@ -44,6 +44,8 @@ class DataScrape:
     def special_plan_scrape(self):
         special_plan = JsonAnalysis(self.school_name)
         plan_response = special_plan.analysis(subject_name='plan')
+        if not plan_response:
+            return True
         try:
             years = plan_response.get('data').get('newsdata').get('year')[self.province_id]
         except KeyError:
@@ -65,10 +67,10 @@ class DataScrape:
                     time.sleep(random.randint(min_time, max_time))
                     plan_crawler = CeeCrawler(encrypted_url)
                     plan_data = plan_crawler.get_response()
-                    while score_data is None:
-                        time.sleep(max_waiting_time)
-                        logging.info('No data received !!!!! restarting')
-                        score_data = plan_crawler.get_response()
+                    while plan_data is None:
+                        time.sleep(restart_waiting_time)
+                        logging.info('No data received !!!! restarting')
+                        plan_data = plan_crawler.get_response()
                     num_found = plan_data.get('data').get('numFound')
                     if num_found == 0:
                         break
@@ -89,16 +91,18 @@ class DataScrape:
                         time.sleep(random.randint(min_time, max_time))
                         plan_crawler = CeeCrawler(encrypted_url)
                         plan_data = plan_crawler.get_response()
-                        while score_data is None:
-                            time.sleep(max_waiting_time)
-                            logging.info('No data received !!!!! restarting')
-                            score_data = plan_crawler.get_response()
+                        while plan_data is None:
+                            time.sleep(restart_waiting_time)
+                            logging.info('No data received !!! restarting')
+                            plan_data = plan_crawler.get_response()
                         self.data_storage.store(plan_data.get('data').get('item'), collection_name=default_plan_collection)
                         logging.info('%s %s %s %s page%s', self.school_name, year, batch, subject, page)
 
     def special_score_scrape(self):
         special_score = JsonAnalysis(self.school_name)
         score_response = special_score.analysis(subject_name='score')
+        if not score_response:
+            return True
         try:
             years = score_response.get('data').get('newsdata').get('year')[self.province_id]
         except KeyError:
@@ -122,7 +126,7 @@ class DataScrape:
                     score_data = score_crawler.get_response()
                     while score_data is None:
                         time.sleep(max_waiting_time)
-                        logging.info('No data received !!!!! restarting')
+                        logging.info('No data receiced !!! restarting')
                         score_data = score_crawler.get_response()
                     num_found = score_data.get('data').get('numFound')
                     if num_found == 0:
@@ -144,42 +148,12 @@ class DataScrape:
                         time.sleep(random.randint(min_time, max_time))
                         score_crawler = CeeCrawler(encrypted_url)
                         score_data = score_crawler.get_response()
-                        while score_data is None:
+                        if score_data is None:
                             time.sleep(max_waiting_time)
-                            logging.info('No data received !!!!! restarting')
+                            logging.info('No data received !! restarting')
                             score_data = score_crawler.get_response()
                         self.data_storage.store(score_data.get('data').get('item'), collection_name=default_score_collection)
                         logging.info('%s %s %s %s page%s', self.school_name, year, batch, subject, page)
-
-    def full_school_name_scrape(self):
-        page_1_url = 'api.eol.cn/web/api/?admissions=&central=&department=&dual_class=&f211=&f985=&is_doublehigh' \
-                     '=&is_dual_class=&keyword=&nature=&page=1&province_id=&ranktype=&request_type=1&school_type' \
-                     '=&size=20&top_school_id=3269&type=&uri=apidata/api/gk/school/lists'
-        safe_sign = hash_hmac(page_1_url)
-        encrypted_url = 'https://' + page_1_url + '&signsafe=' + safe_sign
-        time.sleep(random.randint(min_time, max_time))
-        score_crawler = CeeCrawler(encrypted_url)
-        score_data = score_crawler.get_response()
-        num_found = score_data.get('data').get('numFound')
-
-        self.data_storage.store(score_data.get('data').get('item'), collection_name='full_school_info')
-        logging.info('school list page 1 done!')
-        pages = num_found // 10
-        for page in range(2, pages + 2):
-            if num_found % 10 == 0:
-                if page == pages + 1:
-                    continue
-            no_page_url = 'api.eol.cn/web/api/?admissions=&central=&department=&dual_class=&f211=&f985=&is_doublehigh' \
-                     f'=&is_dual_class=&keyword=&nature=&page={page}&province_id=&ranktype=&request_type=1&school_type' \
-                     '=&size=20&top_school_id=3269&type=&uri=apidata/api/gk/school/lists'
-            url = no_page_url.format(page=page)
-            safe_sign = hash_hmac(url)
-            encrypted_url = 'https://' + url + '&signsafe=' + safe_sign
-            time.sleep(random.randint(min_time, max_time))
-            school_list_crawler = CeeCrawler(encrypted_url)
-            school_data = school_list_crawler.get_response()
-            self.data_storage.store(school_data.get('data').get('item'), collection_name='full_school_info')
-            logging.info('school list page %s done!', page)
 
 
 

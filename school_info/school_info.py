@@ -20,6 +20,8 @@ class JsonAnalysis:
         url = BASE_URL.format(school_id=self.school_id, subject=subject_dic[subject_name])
         crawler = CeeCrawler(url)
         response = crawler.get_response()
+        if response is None:
+            return False
         if response.get('message') == '\u6210\u529f':
             logging.info('scraping %s with status code %s', subject_dic[subject_name], response.get('message'))
             return response

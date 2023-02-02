@@ -6,7 +6,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s : %(message)s')
 MONGO_DB_NAME = 'cee_crawler'
-MONGO_CONNECTION_STRING = 'mongodb://localhost:27017'
+MONGO_CONNECTION_STRING = 'mongodb://192.168.0.103:27017'
 default_check_db_name = 'full_school_info'
 province = {
     11: "\u5317\u4eac",
